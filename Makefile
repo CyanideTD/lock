@@ -1,4 +1,4 @@
-BASE_PATH := ../../base
+BASE_PATH := ../../../base
 LIB_PATH := $(BASE_PATH)/lib
 project.targets += lock_svr
 project.extra_warning := -Wno-write-strings -fpermissive

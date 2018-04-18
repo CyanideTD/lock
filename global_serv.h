@@ -45,6 +45,8 @@ public :
     
     CTseLogger				*m_poStatLog;				// old stat log
 
+    CStatistic              *m_poStatistic;
+
 	CLockGroup				*m_poLockHash;				// lock svr;
 
 private :

@@ -17,7 +17,7 @@ CGlobalServ * CGlobalServ::Instance()
     return g_poGlobalServ;
 }
 
-HRESULT CGlobalServ::Init(const TCHAR *pszConfFile, const TCHAR * pszRegCbuFile)
+HRESULT CGlobalServ::Init(const TCHAR *pszConfFile, const TCHAR *pszRegCbuFile)
 {
     CGlobalServ::Instance();
     
@@ -32,6 +32,8 @@ HRESULT CGlobalServ::Init(const TCHAR *pszConfFile, const TCHAR * pszRegCbuFile)
     DEFINE_LOG(stat_log, "stat_log");
     g_poGlobalServ->m_poStatLog        = stat_log;
 
+    g_poGlobalServ->m_poStatistic = CStatistic::Instance();
+
     // 2> conf
     g_poGlobalServ->m_poConf = new CConf;
     if (S_OK != g_poGlobalServ->m_poConf->Init("../conf/serv_info.conf", "../conf/module.conf"))
@@ -40,6 +42,7 @@ HRESULT CGlobalServ::Init(const TCHAR *pszConfFile, const TCHAR * pszRegCbuFile)
         return S_FAIL;
     }
     TSE_LOG_INFO(g_poServLog, ("GlobalServ Init conf succ"));
+    g_poGlobalServ->m_poStatistic->Init(stat_log, g_poGlobalServ->m_poConf);
 
 	// wavewang@20130511: lock hash
 	g_poGlobalServ->m_poLockHash = new CLockGroup;
@@ -75,7 +78,7 @@ HRESULT CGlobalServ::Init(const TCHAR *pszConfFile, const TCHAR * pszRegCbuFile)
     {
         if(S_OK!=g_poGlobalServ->m_paoWorkProcessList[udwI].Init(g_poGlobalServ->m_poConf,g_poGlobalServ->g_poServLog,
 			g_poGlobalServ->m_poWorkQueue, g_poGlobalServ->m_poQueryNetIO->m_poLongConn,
-			g_poGlobalServ->m_poQueryNetIO->m_poLongConn))
+			g_poGlobalServ->m_poQueryNetIO->m_poLongConn, g_poGlobalServ->m_poStatistic))
         {
             TSE_LOG_ERROR(g_poServLog, ("GlobalServ Init work process failed"));
             return S_FAIL;
@@ -115,6 +118,12 @@ HRESULT CGlobalServ::Start()
     if (0 != pthread_create(&tThrId, NULL, CQueryNetIO::RoutineNetIO,g_poGlobalServ->m_poQueryNetIO ))
     {
         TSE_LOG_ERROR(g_poServLog, ("Create query netio thread failed, err msg[%s]",  strerror(errno)));
+        return S_FAIL;
+    }
+
+    if (0 != pthread_create(&tThrId, NULL, CStatistic::Start, g_poGlobalServ->m_poStatistic))
+    {
+        TSE_LOG_ERROR(g_poServLog, ("Create Statistic thread failed, err msg[%s]", strerror(errno)));
         return S_FAIL;
     }
 

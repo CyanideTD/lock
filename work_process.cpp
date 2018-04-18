@@ -29,7 +29,7 @@ CWorkProcess::~CWorkProcess()
 	}
 }
 
-TINT32 CWorkProcess::Init( CConf *poConf, CTseLogger *poLog, CTaskQueue *poUpdateQue, ILongConn *poUpdtLongConn, ILongConn *poQueryLongConn )
+TINT32 CWorkProcess::Init( CConf *poConf, CTseLogger *poLog, CTaskQueue *poUpdateQue, ILongConn *poUpdtLongConn, ILongConn *poQueryLongConn, CStatistic *stat )
 {
 	TINT32 dwRetCode = 0;
 
@@ -45,6 +45,8 @@ TINT32 CWorkProcess::Init( CConf *poConf, CTseLogger *poLog, CTaskQueue *poUpdat
     m_poUnpack->Init();
 	m_poPack = new CBaseProtocolPack;
 	m_poPack->Init();
+
+    m_poStat = stat;
 
     return dwRetCode;
 }
@@ -230,6 +232,22 @@ TINT32 CWorkProcess::SendRes( CSessionWrapper *poSession )
 	TSE_LOG_INFO(m_poLog, ("type[%u],num[%u],key[%s],ret[%d],times[%u],packlen[%u],cost[%llu] [seq=%u]", \
 		poSession->m_udwServiceType, poSession->m_stReqParam.m_udwKeyNum, 
 		sKey.c_str(),poSession->m_dwRetCode, poSession->m_udwReqTimes, udwPackageLen, uddwCostUs, poSession->m_udwClientSeq));
+
+    if (poSession->m_dwRetCode)
+    {
+        if (poSession->m_udwServiceType == EN_SERVICE_TYPE_HU2LOCK__GET_REQ)
+        {
+            m_poStat->AddHsSearch(uddwCostUs);
+        }
+        else
+        {
+            m_poStat->AddHsUpdate(uddwCostUs);
+        }
+    }
+    else
+    {
+        m_poStat->AddError(uddwCostUs);
+    }
 
 	// 4. release
 	CWorkSessionMgr::Instance()->ReleaseSesion(poSession);

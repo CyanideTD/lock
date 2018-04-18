@@ -10,10 +10,10 @@
 enum ECommandType
 {
     UNKNOWN_CMD = 0,
-    CMD_SET = 1,        //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½keyï¿½ï¿½value
-    CMD_ADD = 2,        //×·ï¿½ï¿½
-    CMD_DEL_USER = 3,	//É¾ï¿½ï¿½Ò»ï¿½ï¿½keyï¿½ï¿½ï¿½ï¿½value
-    CMD_DEL_VAL = 4,	//É¾ï¿½ï¿½valveï¿½Ðµï¿½Ä³Ð©Öµ
+    CMD_SET = 1,        //ÖØÖÃÒ»¸ökeyµÄvalue
+    CMD_ADD = 2,        //×·¼Ó
+    CMD_DEL_USER = 3,	//É¾³ýÒ»¸ökey¼°Æävalue
+    CMD_DEL_VAL = 4,	//É¾³ývalveÖÐµÄÄ³Ð©Öµ
 };
 
 enum EDataType
@@ -94,7 +94,7 @@ enum ErrorCode
 };
 
 
-//ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ï¿½,ï¿½ï¿½usï¿½ï¿½ï¿½ï¿½
+//»ñÈ¡µ±Ç°Ê±¼ä,ÒÔus·µ»Ø
 inline TUINT64 rdtsc()
 {
 	struct timeval  tv;

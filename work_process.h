@@ -17,7 +17,7 @@ public :
     /*
      *    初始化函数
      */
-	TINT32 Init(CConf *poConf, CTseLogger *poLog,  CTaskQueue *poUpdateQue, ILongConn *poUpdtLongConn, ILongConn *poQueryLongConn);
+	TINT32 Init(CConf *poConf, CTseLogger *poLog,  CTaskQueue *poUpdateQue, ILongConn *poUpdtLongConn, ILongConn *poQueryLongConn, CStatistic* stat);
 
     /*
      *    线程启动函数
@@ -42,6 +42,8 @@ private:
     CConf                        *m_poConf;				    //配置
 
     CTseLogger                    *m_poLog;					//Log
+
+    CStatistic                    *m_poStat;
     
     CTaskQueue                    *m_poUpdateQueue;         //更新队列
     
